@@ -122,7 +122,7 @@ class User:
                         print(f'[{Fore.GREEN}+{Fore.WHITE}] {self.username} joined the giveaway')
                         data = {
                             'embeds':[{
-                                'color': int('2e88f5',16),
+                                'color': int('e07800',16),
                                 'fields': [
                                     {'name': f'{self.username} joined the giveaway' ,'value': f'\u200b','inline':False},
                                 ]
@@ -130,10 +130,10 @@ class User:
                         }
                         requests.post(webhook, json=data)
                         joinedGiveaways += 1
-                    elif '24' in join.text:
+                    elif '24' in str(join):
                         data = {
                             'embeds':[{
-                                'color': int('2e88f5',16),
+                                'color': int('e07800',16),
                                 'fields': [
                                     {'name': f'{self.username} is unable to join the giveaway' ,'value': f'No games played in the past 24 hours','inline':False},
                                 ]
@@ -143,7 +143,7 @@ class User:
                     else:
                         data = {
                             'embeds':[{
-                                'color': int('2e88f5',16),
+                                'color': int('e07800',16),
                                 'fields': [
                                     {'name': f'Dont know' ,'value': f'Couldnt be bothered to check the other responses so send this to Turn\n{str(join)}','inline':False},
                                 ]
@@ -153,9 +153,10 @@ class User:
             time.sleep(1)
 
 
-Thread(target=checkGiveaway).start()
-Thread(target=title).start()
 for bearer in bearer_tokens:
     c = User(bearer)
+
+Thread(target=checkGiveaway).start()
+Thread(target=title).start()
 
 print(f'\nBearer tokens were checked > {Fore.GREEN}{loaded}{Fore.WHITE} accounts loaded / {Fore.RED}{failed} {Fore.WHITE}accounts not loaded')
