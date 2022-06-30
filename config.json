@@ -1,0 +1,8 @@
+{
+  "discord_id": "your discord id",
+  "webhook": "discord webhook",
+  "bearer_tokens": [
+    "token1",
+    "token2 etc"
+  ]
+}
