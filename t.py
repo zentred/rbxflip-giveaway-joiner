@@ -112,32 +112,45 @@ class User:
             time.sleep(1)
 
     def enterGiveaway(self):
-        for gw in self.current_gw:
-            if gw not in self.passed:
-                self.passed.append(gw)
-                join = scraper.put(f'https://legacy.rbxflip-apis.com/giveaways/{gw}', headers=self.headers).json()
-                if 'ok' in join and join['ok']:
-                    print(f'[{Fore.GREEN}+{Fore.WHITE}] {self.username} joined the giveaway')
-                elif '24' in join.text:
-                    data = {
-                        'embeds':[{
-                            'color': int('2e88f5',16),
-                            'fields': [
-                                {'name': f'{self.username} is unable to join the giveaway' ,'value': f'No games played in the past 24 hours','inline':False},
-                            ]
-                        }]
-                    }
-                    requests.post(webhook, json=data)
-                else:
-                    data = {
-                        'embeds':[{
-                            'color': int('2e88f5',16),
-                            'fields': [
-                                {'name': f'Dont know' ,'value': f'Couldnt be bothered to check the other responses so send this to Turn\n{str(join)}','inline':False},
-                            ]
-                        }]
-                    }
-                    requests.post(webhook, json=data)
+        global joinedGiveaways
+        while True:
+            for gw in self.current_gw:
+                if gw not in self.passed:
+                    self.passed.append(gw)
+                    join = scraper.put(f'https://legacy.rbxflip-apis.com/giveaways/{gw}', headers=self.headers).json()
+                    if 'ok' in join and join['ok']:
+                        print(f'[{Fore.GREEN}+{Fore.WHITE}] {self.username} joined the giveaway')
+                        data = {
+                            'embeds':[{
+                                'color': int('2e88f5',16),
+                                'fields': [
+                                    {'name': f'{self.username} joined the giveaway' ,'value': f'\u200b','inline':False},
+                                ]
+                            }]
+                        }
+                        requests.post(webhook, json=data)
+                        joinedGiveaways += 1
+                    elif '24' in join.text:
+                        data = {
+                            'embeds':[{
+                                'color': int('2e88f5',16),
+                                'fields': [
+                                    {'name': f'{self.username} is unable to join the giveaway' ,'value': f'No games played in the past 24 hours','inline':False},
+                                ]
+                            }]
+                        }
+                        requests.post(webhook, json=data)
+                    else:
+                        data = {
+                            'embeds':[{
+                                'color': int('2e88f5',16),
+                                'fields': [
+                                    {'name': f'Dont know' ,'value': f'Couldnt be bothered to check the other responses so send this to Turn\n{str(join)}','inline':False},
+                                ]
+                            }]
+                        }
+                        requests.post(webhook, json=data)
+            time.sleep(1)
 
 
 Thread(target=checkGiveaway).start()
