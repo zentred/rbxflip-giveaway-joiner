@@ -64,16 +64,17 @@ def checkGiveaway():
                             }]
                         }
                         requests.post(webhook, json=data)
-
-            while True:
-                time.sleep(1)
-                currentSecond += 1
-                if currentSecond == 15:
-                    currentSecond = 0
-                    break
         except:
+            print(f'[{Fore.MAGENTA}Error{Fore.WHITE}] Error occured, retrying in 15 seconds (possible {Fore.MAGENTA}Cloudflare {Fore.WHITE}prompted)')
             time.sleep(15)
             pass
+
+        while True:
+            time.sleep(1)
+            currentSecond += 1
+            if currentSecond == 15:
+                currentSecond = 0
+                break
 
 class User:
 
@@ -121,39 +122,51 @@ class User:
             for gw in self.current_gw:
                 if gw not in self.passed:
                     self.passed.append(gw)
-                    join = scraper.put(f'https://legacy.rbxflip-apis.com/giveaways/{gw}', headers=self.headers).json()
-                    if 'ok' in join and join['ok']:
-                        print(f'[{Fore.GREEN}+{Fore.WHITE}] {self.username} joined the giveaway')
-                        data = {
-                            'embeds':[{
-                                'color': int('e07800',16),
-                                'fields': [
-                                    {'name': f'{self.username} joined the giveaway' ,'value': f'\u200b','inline':False},
-                                ]
-                            }]
-                        }
-                        requests.post(webhook, json=data)
-                        joinedGiveaways += 1
-                    elif '24' in str(join):
-                        data = {
-                            'embeds':[{
-                                'color': int('e07800',16),
-                                'fields': [
-                                    {'name': f'{self.username} is unable to join the giveaway' ,'value': f'No games played in the past 24 hours','inline':False},
-                                ]
-                            }]
-                        }
-                        requests.post(webhook, json=data)
-                    else:
-                        data = {
-                            'embeds':[{
-                                'color': int('e07800',16),
-                                'fields': [
-                                    {'name': f'Dont know' ,'value': f'Couldnt be bothered to check the other responses so send this to Turn\n{str(join)}','inline':False},
-                                ]
-                            }]
-                        }
-                        requests.post(webhook, json=data)
+                    while True:
+                        try:
+                            join = scraper.put(f'https://legacy.rbxflip-apis.com/giveaways/{gw}', headers=self.headers)
+                            if 'cloudflare' in join.text.lower():
+                                continue
+                            else:
+                                join = join.json()
+                                if 'ok' in join and join['ok']:
+                                    print(f'[{Fore.GREEN}+{Fore.WHITE}] {self.username} joined the giveaway')
+                                    data = {
+                                        'embeds':[{
+                                            'color': int('e07800',16),
+                                            'fields': [
+                                                {'name': f'{self.username} joined the giveaway' ,'value': f'\u200b','inline':False},
+                                            ]
+                                        }]
+                                    }
+                                    requests.post(webhook, json=data)
+                                    joinedGiveaways += 1
+                                elif '24' in str(join):
+                                    data = {
+                                        'embeds':[{
+                                            'color': int('e07800',16),
+                                            'fields': [
+                                                {'name': f'{self.username} is unable to join the giveaway' ,'value': f'No games played in the past 24 hours','inline':False},
+                                            ]
+                                        }]
+                                    }
+                                    requests.post(webhook, json=data)
+                                else:
+                                    data = {
+                                        'embeds':[{
+                                            'color': int('e07800',16),
+                                            'fields': [
+                                                {'name': f'Dont know' ,'value': f'Couldnt be bothered to check the other responses so send this to Turn\n{str(join)}','inline':False},
+                                            ]
+                                        }]
+                                    }
+                                    requests.post(webhook, json=data)
+                                break
+                        except:
+                            print(f'[{Fore.MAGENTA}Error{Fore.WHITE}] Error occured, retrying in 5 seconds (possible {Fore.MAGENTA}Cloudflare {Fore.WHITE}prompted)')
+                            time.sleep(5)
+                            pass
+                            
             time.sleep(1)
 
 
