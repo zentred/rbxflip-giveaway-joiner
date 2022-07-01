@@ -27,49 +27,53 @@ def title():
 def checkGiveaway():
     global currentSecond, foundGiveaways, already_gw
     while True:
-        giveaway = scraper.get("https://legacy.rbxflip-apis.com/giveaways").json()
-        for gw in giveaway['data']['giveaways']:
+        try:
+            giveaway = scraper.get("https://legacy.rbxflip-apis.com/giveaways").json()
+            for gw in giveaway['data']['giveaways']:
 
-            holder = gw['holder']['name']
-            itemName = gw['item']['name']
-            itemValue = gw['item']['value']
+                holder = gw['holder']['name']
+                itemName = gw['item']['name']
+                itemValue = gw['item']['value']
 
-            if gw['status'] == 'Completed':
-                if gw['winner']['name'] in my_users:
+                if gw['status'] == 'Completed':
+                    if gw['winner']['name'] in my_users:
 
-                    data = {
-                        'content': '<@{discord_id}>',
-                        'embeds':[{
-                            'color': int('129b19',16),
-                            'fields': [
-                                {'name': f"You won the giveaway on {gw['winner']['name']}" ,'value': f'{itemName} (**{itemValue}**)','inline':False},
-                            ]
-                        }]
-                    }
-                    requests.post(webhook, json=data)
-            else:
-                if gw['_id'] not in already_gw:
-                    already_gw.append(gw['_id'])
-                    foundGiveaways += 1
+                        data = {
+                            'content': '<@{discord_id}>',
+                            'embeds':[{
+                                'color': int('129b19',16),
+                                'fields': [
+                                    {'name': f"You won the giveaway on {gw['winner']['name']}" ,'value': f'{itemName} (**{itemValue}**)','inline':False},
+                                ]
+                            }]
+                        }
+                        requests.post(webhook, json=data)
+                else:
+                    if gw['_id'] not in already_gw:
+                        already_gw.append(gw['_id'])
+                        foundGiveaways += 1
 
-                    print(f'[{Fore.LIGHTCYAN_EX}+{Fore.WHITE}] Giveaway found > {Fore.LIGHTCYAN_EX} {itemName} (Value: {itemValue})')
+                        print(f'[{Fore.LIGHTCYAN_EX}+{Fore.WHITE}] Giveaway found > {Fore.LIGHTCYAN_EX} {itemName} (Value: {itemValue})')
 
-                    data = {
-                        'embeds':[{
-                            'color': int('2e88f5',16),
-                            'fields': [
-                                {'name': f'{holder} is giving away a limited!' ,'value': f'{itemName} (**{itemValue}**)','inline':False},
-                            ]
-                        }]
-                    }
-                    requests.post(webhook, json=data)
+                        data = {
+                            'embeds':[{
+                                'color': int('2e88f5',16),
+                                'fields': [
+                                    {'name': f'{holder} is giving away a limited!' ,'value': f'{itemName} (**{itemValue}**)','inline':False},
+                                ]
+                            }]
+                        }
+                        requests.post(webhook, json=data)
 
-        while True:
-            time.sleep(1)
-            currentSecond += 1
-            if currentSecond == 15:
-                currentSecond = 0
-                break
+            while True:
+                time.sleep(1)
+                currentSecond += 1
+                if currentSecond == 15:
+                    currentSecond = 0
+                    break
+        except:
+            time.sleep(15)
+            pass
 
 class User:
 
