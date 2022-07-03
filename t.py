@@ -11,6 +11,7 @@ loaded = 0
 failed = 0
 already_gw = []
 my_users = []
+checkedStatus = []
 
 os.system('cls')
 
@@ -25,7 +26,7 @@ def title():
         time.sleep(0.1)
 
 def checkGiveaway():
-    global currentSecond, foundGiveaways, already_gw
+    global currentSecond, foundGiveaways, already_gw, checkedStatus
     while True:
         try:
             giveaway = scraper.get("https://legacy.rbxflip-apis.com/giveaways").json()
@@ -35,11 +36,12 @@ def checkGiveaway():
                 itemName = gw['item']['name']
                 itemValue = gw['item']['value']
 
-                if gw['status'] == 'Completed':
+                if gw['status'] == 'Completed' and gw['_id'] not in checkedStatus:
+                    checkedStatus.append(gw['_id'])
                     if gw['winner']['name'] in my_users:
 
                         data = {
-                            'content': '<@{discord_id}>',
+                            'content': f'<@{discord_id}>',
                             'embeds':[{
                                 'color': int('129b19',16),
                                 'fields': [
